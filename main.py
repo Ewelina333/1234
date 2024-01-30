@@ -1,4 +1,10 @@
+#Na 4 - API, które posiada 2 endpointy, jeden z punktu a., drugi GET który w parametrze
+#otrzymuje link do zdjęcia, które jest w Internecie, pobiera je, a następnie zwraca
+#informację o tym ile znaleziono osób na zdjęciu.
+
 import cv2
+import numpy as np
+import urllib.request
 from flask import Flask, request
 from flask_restful import Resource, Api
 
@@ -23,17 +29,27 @@ class PeopleCounterStatic(Resource):
 
 
 class PeopleCounterDynamicUrl(Resource):
-    @property
     def get(self):
-        # TODO:
-        # 1. Pobrać zdjęcie z otrzymanego adresu
-        # 2. Pobrane zdjęcie można zapisać na dysku lub przetwarzać je w pamięci podręcznej
-        # 3. Załadowane zjęcie do zmiennej image przekazać do algorytmu hog.detectMultiScale i zwrócić z
-        # endpointu liczbę wykrytych osób.
-
+        # Get the URL from the request parameters
         url = request.args.get('url')
-        print('url', url)
-        return {'peopleCount': 0}
+
+        try:
+            # Download the image from the URL
+            req = urllib.request.urlopen(url)
+            arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+            image = cv2.imdecode(arr, -1)
+
+            # Resize the image if needed
+            image = cv2.resize(image, (700, 400))
+
+            # Detect people in the image
+            (rects, weights) = hog.detectMultiScale(image, winStride=(4, 4), padding=(8, 8), scale=1.05)
+
+            return {'peopleCount': len(rects)}
+
+        except Exception as e:
+            return {'error': str(e)}
+
 
 api.add_resource(PeopleCounterStatic, '/')
 api.add_resource(PeopleCounterDynamicUrl, '/dynamic')
