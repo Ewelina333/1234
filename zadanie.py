@@ -72,9 +72,9 @@ st.title("Analiza Portfela Inwestycyjnego")
 
 # Ustawiamy daty
 today = datetime.today()
-max_date = today + timedelta(days=30)
+min_date = today - timedelta(days=30)  # Data nie może być wcześniejsza niż 30 dni przed dzisiaj
 
-start_date = st.date_input("Data startu", value=today, max_value=max_date)
+start_date = st.date_input("Data startu", value=min_date, min_value=min_date, max_value=today)
 usd_share = st.slider("USD %", min_value=0, max_value=100, value=30)
 eur_share = st.slider("EUR %", min_value=0, max_value=100, value=40)
 huf_share = st.slider("HUF %", min_value=0, max_value=100, value=30)
@@ -102,6 +102,7 @@ if st.button("Uruchom analizę"):
     st.write("Wartości końcowe (jaką wartość miała inwestycja w każdej walucie na końcu):", final_values)
     st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN (łączna wartość inwestycji).")
     st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN (łączna wartość inwestycji po 30 dniach).")
+
 
 
 
