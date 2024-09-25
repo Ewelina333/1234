@@ -84,8 +84,18 @@ usd_share = st.slider("USD %", min_value=0, max_value=100, value=30)
 eur_share = st.slider("EUR %", min_value=0, max_value=100, value=40)
 huf_share = st.slider("HUF %", min_value=0, max_value=100, value=30)
 
+# Obliczanie sumy procentów
+total_share = usd_share + eur_share + huf_share
+remaining_percentage = 100 - total_share
+
+# Wyświetlanie podpowiedzi, ile brakuje do 100%
+if remaining_percentage < 0:
+    st.warning("Suma procentów przekracza 100%.")
+else:
+    st.write(f"Brakuje {remaining_percentage}% do sumy 100%.")
+
 # Sprawdzenie, czy suma procentów wynosi 100%
-if usd_share + eur_share + huf_share != 100:
+if total_share != 100:
     st.error("Suma procentów musi wynosić 100%.")
 else:
     # Przycisk do uruchomienia analizy
@@ -114,5 +124,6 @@ else:
             st.write("Wartości końcowe:", final_values)
             st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN")
             st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN")
+
 
 
