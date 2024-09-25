@@ -44,36 +44,25 @@ def calculate_portfolio_value(start_date, currencies, distribution, investment, 
 # Funkcja do generowania wykresów i ich zapisu do pliku
 def generate_plots(currencies, distribution, rates_start, rates_end, initial_values, final_values, total_initial_value, total_final_value, start_date, end_date):
     # Wykres podziału początkowego
-    plt.figure(figsize=(12, 6))
-
-    # Wykres podziału początkowego
-    plt.subplot(1, 3, 1)
+    plt.figure(figsize=(10, 5))
+    plt.subplot(1, 2, 1)
     plt.pie(distribution, labels=currencies, autopct='%1.1f%%', startangle=140)
     plt.title('Początkowy podział inwestycji')
-
+    
     # Wykres wartości portfela początkowego i końcowego
-    plt.subplot(1, 3, 2)
+    plt.subplot(1, 2, 2)
     values = [total_initial_value, total_final_value]
-    bar_colors = ['#1f77b4', '#ff7f0e']  # Kolory słupków
-    bars = plt.bar(['Początek', 'Koniec'], values, color=bar_colors, edgecolor='black', linewidth=1.5)
-    plt.title('Wartość portfela (PLN)')
-    plt.ylim(0, max(values) * 1.2)  # Ustawienie limitu y dla lepszej prezentacji
-
-    # Dodawanie wartości do słupków
+    bars = plt.bar(['Początek', 'Koniec'], values, color=['blue', 'green'])
+    
+    # Dodanie etykiet z wartościami na wykresie
     for bar in bars:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval + 20, f'{yval:.2f}', ha='center', va='bottom', fontsize=12, fontweight='bold')  # Wyświetlanie wartości nad słupkiem
-
-    plt.grid(axis='y', linestyle='--', alpha=0.7)  # Dodanie siatki do osi Y
-
-    # Wykres podziału końcowego
-    plt.subplot(1, 3, 3)
-    final_distribution = [final_value / total_final_value for final_value in final_values.values()]
-    plt.pie(final_distribution, labels=currencies, autopct='%1.1f%%', startangle=140)
-    plt.title('Końcowy podział inwestycji')
-
+        plt.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2), va='bottom')  # wyświetlanie wartości nad słupkami
+    
+    plt.title('Wartość portfela (PLN)')
+    
     # Zapis wykresów do pliku PNG
-    plt.suptitle(f'Inwestycja od {start_date} do {end_date.strftime("%Y-%m-%d")}', fontsize=16)
+    plt.suptitle(f'Inwestycja od {start_date} do {end_date.strftime("%Y-%m-%d")}')
     plt.tight_layout()
     plt.savefig("inwestycja_podsumowanie.png")  # Zapisujemy wykresy do pliku PNG
     st.image("inwestycja_podsumowanie.png")  # Wyświetlamy wykres w Streamlit
@@ -86,32 +75,30 @@ usd_share = st.slider("USD %", min_value=0, max_value=100, value=30)
 eur_share = st.slider("EUR %", min_value=0, max_value=100, value=40)
 huf_share = st.slider("HUF %", min_value=0, max_value=100, value=30)
 
-# Informacja o brakujących procentach
-missing_percentage = 100 - (usd_share + eur_share + huf_share)
-st.write(f"Brakuje {missing_percentage} % do 100% w sumie procentów.")
+# Obliczanie brakującego procentu
+remaining_percentage = 100 - (usd_share + eur_share + huf_share)
+st.write(f"Pozostały procent do 100%: {remaining_percentage} %")
 
 # Przycisk do uruchomienia analizy
 if st.button("Uruchom analizę"):
-    if missing_percentage != 0:
-        st.warning("Suma procentów musi wynosić 100%.")
-    else:
-        investment = 1000  # stała kwota inwestycji
-        currencies = ['usd', 'eur', 'huf']  # waluty
-        distribution = [usd_share / 100, eur_share / 100, huf_share / 100]  # podział procentowy
-        
-        # Obliczanie wartości portfela
-        rates_start, rates_end, initial_values, final_values, total_initial_value, total_final_value, end_date = calculate_portfolio_value(start_date.strftime('%Y-%m-%d'), currencies, distribution, investment)
-        
-        # Prezentacja wyników i zapis wykresów
-        generate_plots(currencies, distribution, rates_start, rates_end, initial_values, final_values, total_initial_value, total_final_value, start_date, end_date)
-        
-        # Wyświetlanie danych
-        st.write("Kursy na początku:", rates_start)
-        st.write("Kursy na końcu:", rates_end)
-        st.write("Wartości początkowe:", initial_values)
-        st.write("Wartości końcowe:", final_values)
-        st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN")
-        st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN")
+    investment = 1000  # stała kwota inwestycji
+    currencies = ['usd', 'eur', 'huf']  # waluty
+    distribution = [usd_share / 100, eur_share / 100, huf_share / 100]  # podział procentowy
+    
+    # Obliczanie wartości portfela
+    rates_start, rates_end, initial_values, final_values, total_initial_value, total_final_value, end_date = calculate_portfolio_value(start_date.strftime('%Y-%m-%d'), currencies, distribution, investment)
+    
+    # Prezentacja wyników i zapis wykresów
+    generate_plots(currencies, distribution, rates_start, rates_end, initial_values, final_values, total_initial_value, total_final_value, start_date, end_date)
+    
+    # Wyświetlanie danych
+    st.write("Kursy na początku:", rates_start)
+    st.write("Kursy na końcu:", rates_end)
+    st.write("Wartości początkowe (jaką wartość miała inwestycja w każdej walucie na początku):", initial_values)
+    st.write("Wartości końcowe (jaką wartość miała inwestycja w każdej walucie na końcu):", final_values)
+    st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN (łączna wartość inwestycji).")
+    st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN (łączna wartość inwestycji po 30 dniach).")
+
 
 
 
