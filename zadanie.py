@@ -43,27 +43,30 @@ def calculate_portfolio_value(start_date, currencies, distribution, investment, 
 
 # Funkcja do generowania wykresów i ich zapisu do pliku
 def generate_plots(currencies, distribution, rates_start, rates_end, initial_values, final_values, total_initial_value, total_final_value, start_date, end_date):
+    plt.figure(figsize=(12, 6))
+
     # Wykres podziału początkowego
-    plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
     plt.pie(distribution, labels=currencies, autopct='%1.1f%%', startangle=140)
     plt.title('Początkowy podział inwestycji')
-    
+
     # Wykres wartości portfela początkowego i końcowego
     plt.subplot(1, 2, 2)
     values = [total_initial_value, total_final_value]
-    bars = plt.bar(['Początek', 'Koniec'], values, color=['blue', 'green'])
-    
+    bars = plt.bar(['Początek', 'Koniec'], values, color=['#1f77b4', '#ff7f0e'], alpha=0.7)
+
     # Dodanie etykiet z wartościami na wykresie
     for bar in bars:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2), va='bottom')  # wyświetlanie wartości nad słupkami
-    
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), ha='center', va='bottom')  # wyświetlanie wartości nad słupkami
+
     plt.title('Wartość portfela (PLN)')
-    
+    plt.ylabel('Wartość (PLN)')
+    plt.xticks(rotation=45)
+
     # Zapis wykresów do pliku PNG
     plt.suptitle(f'Inwestycja od {start_date} do {end_date.strftime("%Y-%m-%d")}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.96])  # Dostosowanie układu, aby tytuł nie nachodził na wykresy
     plt.savefig("inwestycja_podsumowanie.png")  # Zapisujemy wykresy do pliku PNG
     st.image("inwestycja_podsumowanie.png")  # Wyświetlamy wykres w Streamlit
 
@@ -105,6 +108,7 @@ if st.button("Uruchom analizę"):
     st.write("Wartości końcowe (jaką wartość miała inwestycja w każdej walucie na końcu):", final_values)
     st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN (łączna wartość inwestycji).")
     st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN (łączna wartość inwestycji po 30 dniach).")
+
 
 
 
