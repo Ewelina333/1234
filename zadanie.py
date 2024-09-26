@@ -69,7 +69,7 @@ def generate_plots(currencies, distribution, rates_start, rates_end, total_initi
     plt.title('Końcowy podział inwestycji')
 
     # Zapis wykresów do pliku PNG
-    plt.suptitle(f'Inwestycja od {start_date} do {end_date.strftime("%Y-%m-%d")}')
+    plt.suptitle(f'Inwestycja od {start_date} do {end_date}')  # Upewniamy się, że end_date jest w poprawnym formacie
     plt.tight_layout()
     plt.savefig("inwestycja_podsumowanie.png")  # Zapisujemy wykresy do pliku PNG
     st.image("inwestycja_podsumowanie.png")  # Wyświetlamy wykres w Streamlit
@@ -98,13 +98,14 @@ if st.button("Uruchom analizę") and remaining_percentage == 0:
     rates_start, rates_end, total_initial_value, total_final_value, start_dates_actual, end_dates_actual, final_values, end_date = calculate_portfolio_value(start_date.strftime('%Y-%m-%d'), currencies, distribution, investment)
     
     # Prezentacja wyników i zapis wykresów
-    generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, final_values, start_dates_actual[currencies[0]], end_dates_actual[currencies[0]])  # Zmiana tutaj
+    generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, final_values, start_dates_actual[currencies[0]], end_date)  # Zmiana tutaj
 
     # Wyświetlanie danych
     st.write("Kursy na początku:", {currency: f"{rate[0]:.4f} ({start_dates_actual[currency]})" for currency, rate in rates_start.items()})
     st.write("Kursy na końcu:", {currency: f"{rate[0]:.4f} ({end_dates_actual[currency]})" for currency, rate in rates_end.items()})
     st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN")
     st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN")
+
 
 
 
