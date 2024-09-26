@@ -44,12 +44,12 @@ def calculate_portfolio_value(start_date, currencies, distribution, investment, 
     total_initial_value = round(investment, 2)
     total_final_value = round(sum(final_values.values()), 2)
     
-    return rates_start, rates_end, total_initial_value, total_final_value, start_dates_actual, end_dates_actual, end_date
+    return rates_start, rates_end, total_initial_value, total_final_value, start_dates_actual, end_dates_actual, final_values, end_date
 
 # Funkcja do generowania wykresów i ich zapisu do pliku
-def generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, start_date, end_date):
+def generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, final_values, start_date, end_date):
     # Wykres podziału początkowego
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 6))
     plt.subplot(1, 3, 1)  # zmienione z 1, 2, na 1, 3 (dodajemy jeden wykres)
     plt.pie(distribution, labels=currencies, autopct='%1.1f%%', startangle=140)
     plt.title('Początkowy podział inwestycji')
@@ -95,13 +95,14 @@ if st.button("Uruchom analizę") and remaining_percentage == 0:
     distribution = [usd_share / 100, eur_share / 100, huf_share / 100]  # podział procentowy
     
     # Obliczanie wartości portfela
-    rates_start, rates_end, total_initial_value, total_final_value, start_dates_actual, end_dates_actual, end_date = calculate_portfolio_value(start_date.strftime('%Y-%m-%d'), currencies, distribution, investment)
+    rates_start, rates_end, total_initial_value, total_final_value, start_dates_actual, end_dates_actual, final_values, end_date = calculate_portfolio_value(start_date.strftime('%Y-%m-%d'), currencies, distribution, investment)
     
     # Prezentacja wyników i zapis wykresów
-    generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, start_date, end_date)
+    generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, final_values, start_date, end_date)
     
     # Wyświetlanie danych
     st.write("Kursy na początku:", {currency: f"{rate[0]:.4f} ({start_dates_actual[currency]})" for currency, rate in rates_start.items()})
     st.write("Kursy na końcu:", {currency: f"{rate[0]:.4f} ({end_dates_actual[currency]})" for currency, rate in rates_end.items()})
     st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN")
     st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN")
+
