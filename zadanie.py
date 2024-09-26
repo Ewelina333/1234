@@ -60,7 +60,7 @@ def generate_plots(currencies, distribution, rates_start, rates_end, total_initi
     plt.bar(['Początek', 'Koniec'], values, color=['blue', 'green'])
     plt.title('Wartość portfela (PLN)')
     for index, value in enumerate(values):
-        plt.text(index, value + 50, f'{value:.2f}', ha='center')  # Dodajemy wartość nad słupkami
+        plt.text(index, value - 50, f'{value:.2f}', ha='center')  # Przesunięcie etykiet kwot w dół
 
     # Wykres procentowego podziału po 30 dniach (dodany nowy wykres)
     final_distribution = [final_values[currency] / total_final_value for currency in currencies]
@@ -87,7 +87,7 @@ huf_share = st.slider("HUF %", min_value=0, max_value=100, value=30)
 remaining_percentage = 100 - usd_share - eur_share - huf_share
 if remaining_percentage != 0:
     st.warning(f"Procenty nie sumują się do 100%. Pozostało: {remaining_percentage}%.")
-
+    
 # Przycisk do uruchomienia analizy
 if st.button("Uruchom analizę") and remaining_percentage == 0:
     investment = 1000  # stała kwota inwestycji
@@ -98,13 +98,14 @@ if st.button("Uruchom analizę") and remaining_percentage == 0:
     rates_start, rates_end, total_initial_value, total_final_value, start_dates_actual, end_dates_actual, final_values, end_date = calculate_portfolio_value(start_date.strftime('%Y-%m-%d'), currencies, distribution, investment)
     
     # Prezentacja wyników i zapis wykresów
-    generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, final_values, start_date, end_date)
-    
+    generate_plots(currencies, distribution, rates_start, rates_end, total_initial_value, total_final_value, final_values, start_dates_actual[currencies[0]], end_dates_actual[currencies[0]])  # Zmiana tutaj
+
     # Wyświetlanie danych
     st.write("Kursy na początku:", {currency: f"{rate[0]:.4f} ({start_dates_actual[currency]})" for currency, rate in rates_start.items()})
     st.write("Kursy na końcu:", {currency: f"{rate[0]:.4f} ({end_dates_actual[currency]})" for currency, rate in rates_end.items()})
     st.write(f"Wartość portfela na początku: {total_initial_value:.2f} PLN")
     st.write(f"Wartość portfela na końcu: {total_final_value:.2f} PLN")
+
 
 
 
